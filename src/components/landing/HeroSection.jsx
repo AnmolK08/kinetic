@@ -18,7 +18,7 @@ export default function HeroSection() {
         </h1>
 
         <p className="hero-text">
-          Kinetic is the colorful command center for the things you want to do more of — move,
+          Kinetic is the colorful command center for the things you want to do more of - move,
           focus, and show up.
         </p>
 

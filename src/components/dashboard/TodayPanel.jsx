@@ -7,13 +7,13 @@ export default function TodayPanel({ tasks, done, toggle, onViewAll }) {
     <div className="neo-panel-card today-panel">
       <div className="panel-head">
         <div>
-          <span className="panel-label">TODAY'S ROUTINE</span>
+          <span className="panel-label">TODAY'S MOVES</span>
           <h2>
-            {done.length} / {tasks.length} <small>completed</small>
+            <strong>{done.length}</strong> <small>/ {tasks.length} complete</small>
           </h2>
         </div>
         <div className="score-badge" aria-label={`Progress score ${percent}%`}>
-          {percent}%
+          ON A ROLL
         </div>
       </div>
 
@@ -45,7 +45,7 @@ export default function TodayPanel({ tasks, done, toggle, onViewAll }) {
         onClick={onViewAll}
         data-testid="view-all-routines"
       >
-        <span>View all {tasks.length} routines</span>
+        <span>View all routines</span>
         <ArrowUpRight size={14} strokeWidth={2.5} />
       </button>
     </div>

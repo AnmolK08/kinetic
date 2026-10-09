@@ -64,34 +64,32 @@ export default function KineticDashboard() {
 
               <h1>
                 {view === 'progress' ? (
-                  <>Weekly <span>momentum</span></>
+                  <>Progress looks good<span>!</span></>
                 ) : view === 'routines' ? (
                   <>Active <span>routines</span></>
                 ) : (
-                  <>{dayName.toLowerCase()} <span>focus</span></>
+                  <>Good morning, {user?.name || 'Alex'}<span>!</span></>
                 )}
               </h1>
 
               <p className="dash-subtitle">
                 {view === 'progress'
-                  ? 'Consistency over perfection. Here is how you did this week.'
+                  ? 'Every small action is adding up.'
                   : view === 'routines'
                     ? 'Routines build automatic habits without willpower drain.'
-                    : `Keep the chain alive. ${tasks.length} routines lined up.`}
+                    : "You're building a great rhythm. Keep it rolling."}
               </p>
             </div>
 
-            {view !== 'progress' && (
-              <button
-                type="button"
-                className="neo-button add-button"
-                onClick={() => setShowAdd(true)}
-                data-testid="add-routine-button"
-              >
-                <Plus size={18} strokeWidth={2.5} />
-                <span>Add routine</span>
-              </button>
-            )}
+            <button
+              type="button"
+              className="neo-button add-button"
+              onClick={() => setShowAdd(true)}
+              data-testid="add-routine-button"
+            >
+              <Plus size={18} strokeWidth={2.5} />
+              <span>Add routine</span>
+            </button>
           </div>
 
           {view === 'progress' ? (
