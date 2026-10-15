@@ -1,6 +1,8 @@
 import { LayoutDashboard, Target, Flame } from 'lucide-react';
 
-export default function DashboardSidebar({ view, setView }) {
+export default function DashboardSidebar({ view, setView, streak = 0, score = 0 }) {
+  const streakFormatted = String(streak).padStart(2, '0');
+
   return (
     <aside className="dash-sidebar" aria-label="Dashboard navigation">
       <p className="eyebrow">YOUR SPACE</p>
@@ -38,11 +40,11 @@ export default function DashboardSidebar({ view, setView }) {
       <div className="sidebar-bottom">
         <p className="eyebrow">QUICK STATS</p>
         <div className="mini-stat">
-          <strong>07</strong>
+          <strong>{streakFormatted}</strong>
           <span>day streak</span>
         </div>
         <div className="mini-stat">
-          <strong>82%</strong>
+          <strong>{score}%</strong>
           <span>weekly score</span>
         </div>
       </div>
