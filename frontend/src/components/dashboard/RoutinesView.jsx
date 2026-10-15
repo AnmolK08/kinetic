@@ -244,7 +244,7 @@ export default function RoutinesView({ onBack, onOpenCreateModal }) {
                   key={routine.id}
                   className="neo-panel-card"
                   style={{
-                    border: isActive ? '3.5px solid var(--ink)' : '2.5px solid var(--ink)',
+                    border: isActive ? '3.5px solid var(--border-color, #171717)' : '2.5px solid var(--border-color, #171717)',
                     boxShadow: isActive ? '8px 8px 0 var(--cyan)' : 'var(--shadow)',
                     position: 'relative',
                   }}
@@ -302,11 +302,13 @@ export default function RoutinesView({ onBack, onOpenCreateModal }) {
                           type="button"
                           className="neo-button"
                           style={{
-                            background: 'var(--paper)',
+                            background: 'var(--yellow)',
+                            color: '#171717',
                             border: '2px solid var(--ink)',
+                            boxShadow: '3px 3px 0 var(--ink)',
                             padding: '6px 14px',
                             fontSize: '13px',
-                            fontWeight: 700,
+                            fontWeight: 800,
                             cursor: 'pointer',
                           }}
                           onClick={() => activateMutation.mutate(routine.id)}
@@ -571,7 +573,7 @@ export default function RoutinesView({ onBack, onOpenCreateModal }) {
                   display: 'flex',
                   flexDirection: 'column',
                   justifyContent: 'space-between',
-                  border: '2.5px solid var(--ink)',
+                  border: '2.5px solid var(--border-color, #171717)',
                 }}
               >
                 <div>
@@ -630,9 +632,11 @@ export default function RoutinesView({ onBack, onOpenCreateModal }) {
                   className="neo-button"
                   style={{
                     width: '100%',
-                    background: 'var(--paper)',
+                    background: 'var(--yellow)',
+                    color: '#171717',
                     border: '2px solid var(--ink)',
-                    padding: '8px',
+                    boxShadow: '4px 4px 0 var(--ink)',
+                    padding: '10px 14px',
                     fontWeight: 800,
                     fontSize: '13px',
                     display: 'flex',

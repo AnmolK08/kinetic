@@ -230,6 +230,9 @@ export default function RoutineModal({
                         flex: 1,
                         padding: '8px 10px',
                         fontSize: '13px',
+                        background: 'var(--paper-card)',
+                        color: 'var(--ink)',
+                        border: '2px solid var(--ink)',
                       }}
                     />
 
@@ -247,7 +250,7 @@ export default function RoutineModal({
                       }}
                     >
                       {CATEGORIES.map((cat) => (
-                        <option key={cat.id} value={cat.id}>
+                        <option key={cat.id} value={cat.id} style={{ background: 'var(--paper-card)', color: 'var(--ink)' }}>
                           {cat.label}
                         </option>
                       ))}
@@ -260,7 +263,7 @@ export default function RoutineModal({
                         style={{
                           background: 'none',
                           border: 0,
-                          color: 'var(--ink-subtle)',
+                          color: 'var(--ink)',
                           cursor: 'pointer',
                           padding: '4px',
                         }}
@@ -285,6 +288,9 @@ export default function RoutineModal({
                           padding: '4px 6px',
                           fontSize: '12px',
                           width: 'auto',
+                          background: 'var(--paper-card)',
+                          color: 'var(--ink)',
+                          border: '1.5px solid var(--ink)',
                         }}
                       />
                     </div>
@@ -301,6 +307,9 @@ export default function RoutineModal({
                           padding: '4px 6px',
                           fontSize: '12px',
                           width: 'auto',
+                          background: 'var(--paper-card)',
+                          color: 'var(--ink)',
+                          border: '1.5px solid var(--ink)',
                         }}
                       />
                     </div>
