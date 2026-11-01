@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { X, Plus, Trash2, Clock, Zap, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
+import DayPicker from '@/components/common/DayPicker';
+import { ALL_DAYS } from '@/lib/dates';
 
 const CATEGORIES = [
   { id: 'MOVE', label: 'MOVE', color: 'var(--cyan)' },
@@ -23,18 +25,21 @@ export default function RoutineModal({
       startTime: '07:00',
       endTime: '07:15',
       category: 'ENERGY',
+      daysOfWeek: ALL_DAYS,
     },
     {
       title: '20 Min Mobility & Movement',
       startTime: '07:15',
       endTime: '07:35',
       category: 'MOVE',
+      daysOfWeek: ALL_DAYS,
     },
     {
       title: '90m Deep Focus Work Sprint',
       startTime: '09:00',
       endTime: '10:30',
       category: 'FOCUS',
+      daysOfWeek: ALL_DAYS,
     },
   ]);
 
@@ -48,6 +53,7 @@ export default function RoutineModal({
         startTime: '08:00',
         endTime: '08:30',
         category: 'FOCUS',
+        daysOfWeek: ALL_DAYS,
       },
     ]);
   };
@@ -77,7 +83,7 @@ export default function RoutineModal({
         startTime: t.startTime || '08:00',
         endTime: t.endTime || '08:30',
         category: t.category || 'FOCUS',
-        daysOfWeek: ['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY'],
+        daysOfWeek: t.daysOfWeek && t.daysOfWeek.length > 0 ? t.daysOfWeek : ALL_DAYS,
       }));
 
     if (validTasks.length === 0) {
@@ -274,43 +280,56 @@ export default function RoutineModal({
                     )}
                   </div>
 
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      <Clock size={12} />
-                      <span style={{ fontSize: '11px', fontWeight: 600 }}>Start:</span>
-                      <input
-                        type="time"
-                        value={task.startTime}
-                        onChange={(e) => handleTaskChange(idx, 'startTime', e.target.value)}
-                        required
-                        style={{
-                          margin: 0,
-                          padding: '4px 6px',
-                          fontSize: '12px',
-                          width: 'auto',
-                          background: 'var(--paper-card)',
-                          color: 'var(--ink)',
-                          border: '1.5px solid var(--ink)',
-                        }}
-                      />
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '10px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        <Clock size={12} />
+                        <span style={{ fontSize: '11px', fontWeight: 600 }}>Start:</span>
+                        <input
+                          type="time"
+                          value={task.startTime}
+                          onChange={(e) => handleTaskChange(idx, 'startTime', e.target.value)}
+                          required
+                          style={{
+                            margin: 0,
+                            padding: '4px 6px',
+                            fontSize: '12px',
+                            width: 'auto',
+                            background: 'var(--paper-card)',
+                            color: 'var(--ink)',
+                            border: '1.5px solid var(--ink)',
+                          }}
+                        />
+                      </div>
+
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        <span style={{ fontSize: '11px', fontWeight: 600 }}>End:</span>
+                        <input
+                          type="time"
+                          value={task.endTime}
+                          onChange={(e) => handleTaskChange(idx, 'endTime', e.target.value)}
+                          required
+                          style={{
+                            margin: 0,
+                            padding: '4px 6px',
+                            fontSize: '12px',
+                            width: 'auto',
+                            background: 'var(--paper-card)',
+                            color: 'var(--ink)',
+                            border: '1.5px solid var(--ink)',
+                          }}
+                        />
+                      </div>
                     </div>
 
                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      <span style={{ fontSize: '11px', fontWeight: 600 }}>End:</span>
-                      <input
-                        type="time"
-                        value={task.endTime}
-                        onChange={(e) => handleTaskChange(idx, 'endTime', e.target.value)}
-                        required
-                        style={{
-                          margin: 0,
-                          padding: '4px 6px',
-                          fontSize: '12px',
-                          width: 'auto',
-                          background: 'var(--paper-card)',
-                          color: 'var(--ink)',
-                          border: '1.5px solid var(--ink)',
-                        }}
+                      <span style={{ fontSize: '11px', fontWeight: 700, color: 'var(--ink-subtle)', fontFamily: '"DM Mono", monospace' }}>
+                        DAYS:
+                      </span>
+                      <DayPicker
+                        selectedDays={task.daysOfWeek || ALL_DAYS}
+                        onChange={(newDays) => handleTaskChange(idx, 'daysOfWeek', newDays)}
+                        size="sm"
                       />
                     </div>
                   </div>

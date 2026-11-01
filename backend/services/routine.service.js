@@ -311,10 +311,83 @@ export const updateTask = async (userId, taskId, updates) => {
   if (updates.priority !== undefined) data.priority = updates.priority;
   if (updates.isActive !== undefined) data.isActive = updates.isActive;
 
-  return await prisma.routineTask.update({
+  const updatedTask = await prisma.routineTask.update({
     where: { id: taskId },
     data,
   });
+
+  // If the routine is currently active, update or sync today's task log
+  if (task.routine.isActive) {
+    const todayDate = getUtcDateOnly();
+    const dayOfWeek = DAY_NAMES[todayDate.getUTCDay()];
+
+    const todayDay = await prisma.routineDay.findUnique({
+      where: {
+        userId_routineId_date: {
+          userId,
+          routineId: task.routineId,
+          date: todayDate,
+        },
+      },
+      include: { taskLogs: true },
+    });
+
+    if (todayDay) {
+      const existingLog = todayDay.taskLogs.find((l) => l.routineTaskId === taskId);
+      const isApplicableToday = updatedTask.isActive && updatedTask.daysOfWeek.includes(dayOfWeek);
+
+      if (!isApplicableToday && existingLog && existingLog.status === 'PENDING') {
+        await prisma.$transaction(async (tx) => {
+          await tx.routineTaskLog.delete({ where: { id: existingLog.id } });
+          const allLogs = await tx.routineTaskLog.findMany({
+            where: { routineDayId: todayDay.id },
+          });
+          const completedCount = allLogs.filter((l) => l.status === 'COMPLETED').length;
+          const total = allLogs.length;
+          const percentage = total > 0 ? Math.round((completedCount / total) * 100 * 10) / 10 : 0;
+          await tx.routineDay.update({
+            where: { id: todayDay.id },
+            data: { totalTasks: total, completedTasks: completedCount, completionPercentage: percentage },
+          });
+        });
+      } else if (isApplicableToday && !existingLog) {
+        await prisma.$transaction(async (tx) => {
+          await tx.routineTaskLog.create({
+            data: {
+              routineDayId: todayDay.id,
+              routineTaskId: updatedTask.id,
+              userId,
+              taskTitleSnapshot: updatedTask.title,
+              startTimeSnapshot: updatedTask.startTime,
+              endTimeSnapshot: updatedTask.endTime,
+              status: 'PENDING',
+            },
+          });
+          const allLogs = await tx.routineTaskLog.findMany({
+            where: { routineDayId: todayDay.id },
+          });
+          const completedCount = allLogs.filter((l) => l.status === 'COMPLETED').length;
+          const total = allLogs.length;
+          const percentage = total > 0 ? Math.round((completedCount / total) * 100 * 10) / 10 : 0;
+          await tx.routineDay.update({
+            where: { id: todayDay.id },
+            data: { totalTasks: total, completedTasks: completedCount, completionPercentage: percentage },
+          });
+        });
+      } else if (existingLog) {
+        await prisma.routineTaskLog.update({
+          where: { id: existingLog.id },
+          data: {
+            taskTitleSnapshot: updatedTask.title,
+            startTimeSnapshot: updatedTask.startTime,
+            endTimeSnapshot: updatedTask.endTime,
+          },
+        });
+      }
+    }
+  }
+
+  return updatedTask;
 };
 
 export const removeTask = async (userId, taskId) => {
@@ -395,26 +468,40 @@ export const getTodayRoutine = async (userId, customDate = null) => {
     const applicableTasks = activeRoutine.tasks.filter((t) =>
       t.daysOfWeek.includes(dayOfWeek)
     );
+    const applicableTaskIds = new Set(applicableTasks.map((t) => t.id));
     const existingTaskIds = new Set(routineDay.taskLogs.map((log) => log.routineTaskId).filter(Boolean));
     const missingTasks = applicableTasks.filter((t) => !existingTaskIds.has(t.id));
 
-    if (missingTasks.length > 0) {
+    // Remove pending logs for tasks that are no longer scheduled for today's day of week
+    const obsoletePendingLogs = routineDay.taskLogs.filter((log) =>
+      log.routineTaskId && !applicableTaskIds.has(log.routineTaskId) && log.status === 'PENDING'
+    );
+
+    if (missingTasks.length > 0 || obsoletePendingLogs.length > 0) {
       await prisma.$transaction(async (tx) => {
-        await Promise.all(
-          missingTasks.map((task) =>
-            tx.routineTaskLog.create({
-              data: {
-                routineDayId: routineDay.id,
-                routineTaskId: task.id,
-                userId,
-                taskTitleSnapshot: task.title,
-                startTimeSnapshot: task.startTime,
-                endTimeSnapshot: task.endTime,
-                status: 'PENDING',
-              },
-            })
-          )
-        );
+        if (obsoletePendingLogs.length > 0) {
+          await tx.routineTaskLog.deleteMany({
+            where: { id: { in: obsoletePendingLogs.map((l) => l.id) } },
+          });
+        }
+
+        if (missingTasks.length > 0) {
+          await Promise.all(
+            missingTasks.map((task) =>
+              tx.routineTaskLog.create({
+                data: {
+                  routineDayId: routineDay.id,
+                  routineTaskId: task.id,
+                  userId,
+                  taskTitleSnapshot: task.title,
+                  startTimeSnapshot: task.startTime,
+                  endTimeSnapshot: task.endTime,
+                  status: 'PENDING',
+                },
+              })
+            )
+          );
+        }
 
         const allLogs = await tx.routineTaskLog.findMany({
           where: { routineDayId: routineDay.id },

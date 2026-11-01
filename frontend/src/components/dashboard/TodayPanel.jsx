@@ -117,7 +117,10 @@ export default function TodayPanel({
       <div className="task-list">
         {taskLogs.length === 0 ? (
           <div style={{ padding: '2rem 1rem', textAlign: 'center', color: 'var(--ink-subtle)' }}>
-            <p>No tasks scheduled for today in this routine.</p>
+            <p>
+              No habits scheduled for{' '}
+              {new Date().toLocaleDateString('en-US', { weekday: 'long' })} in this routine.
+            </p>
             <button
               type="button"
               className="neo-button"

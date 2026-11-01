@@ -176,6 +176,20 @@ export const getMonthlyStats = async (userId, month = null, year = null) => {
     orderBy: { date: 'asc' },
   });
 
+  // Calculate user's overall active streaks from all historical days
+  const allHistoricalDays = await prisma.routineDay.findMany({
+    where: { userId },
+    select: {
+      date: true,
+      totalTasks: true,
+      completedTasks: true,
+      completionPercentage: true,
+    },
+    orderBy: { date: 'asc' },
+  });
+
+  const streakInfo = calculateStreaks(allHistoricalDays);
+
   const daysMap = new Map();
   for (const rd of routineDays) {
     daysMap.set(formatDateIso(rd.date), rd);
@@ -203,6 +217,8 @@ export const getMonthlyStats = async (userId, month = null, year = null) => {
 
     days.push({
       date: iso,
+      dayNumber: cur.getUTCDate(),
+      dayOfWeek: cur.getUTCDay(),
       totalTasks: total,
       completedTasks: completed,
       completionPercentage: pct,
@@ -224,6 +240,8 @@ export const getMonthlyStats = async (userId, month = null, year = null) => {
     perfectDays,
     completedTasks: completedTasksMonth,
     totalTasks: totalTasksMonth,
+    currentStreak: streakInfo.currentStreak,
+    longestStreak: streakInfo.longestStreak,
     days,
   };
 };

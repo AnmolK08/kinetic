@@ -1,4 +1,5 @@
 import { ChevronLeft, Flame, Zap, Award, Activity, Target } from 'lucide-react';
+import MonthlyHeatmap from './MonthlyHeatmap';
 
 export default function ProgressView({ weeklyStats, done = 0, total = 0, onBack }) {
   const score = weeklyStats?.weeklyScore ?? 0;
@@ -114,6 +115,12 @@ export default function ProgressView({ weeklyStats, done = 0, total = 0, onBack 
           })}
         </div>
       </div>
+
+      {/* ── Monthly Consistency Heatmap & Progress Status ── */}
+      <MonthlyHeatmap
+        fallbackCurrentStreak={currentStreak}
+        fallbackLongestStreak={longestStreak}
+      />
 
       {/* ── Category Breakdown ── */}
       <div className="neo-panel-card">
